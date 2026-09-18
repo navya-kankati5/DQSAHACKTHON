@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>DQSA Traffic Classifier</title>
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f2f4f7;
+            color: #111;
+        }
+
+        .container {
+            width: 98%;
+            margin: 25px auto;
+            background: white;
+            padding: 30px;
+            border-radius: 18px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 40px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            font-size: 20px;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 45px;
+            font-size: 30px;
+        }
+
+        .live {
+            color: #e91e3d;
+        }
+
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: collapse;
+        }
+
+        th {
+            background: #222;
+            color: white;
+            padding: 15px 10px;
+            text-align: left;
+        }
+
+        td {
+            padding: 14px 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f5f5f5;
+        }
+
+        .green {
+            color: green;
+            font-weight: bold;
+        }
+
+        .dot {
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            background: #2ecc71;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .category {
+            background: #eef2f5;
+            padding: 6px 10px;
+            border-radius: 8px;
+        }
+
+        .confidence {
+            font-weight: bold;
+        }
+
+        .info {
+            margin-top: 30px;
+            background: #f0f2f4;
+            padding: 20px;
+            border-radius: 14px;
+            line-height: 1.7;
+            font-size: 17px;
+        }
+
+        .device-section {
+            margin-top: 45px;
+        }
+
+        .device-card {
+            background: #f6f7f8;
+            padding: 18px;
+            margin-top: 15px;
+            border-radius: 12px;
+        }
+
+        .empty {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+            font-size: 17px;
+        }
+
+        .badge {
+            background: #e8f5e9;
+            padding: 5px 9px;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>🔐 DQSA Traffic Classifier</h1>
+
+    <div class="subtitle">
+        Dynamic Quantized Self-Attention for Encrypted Network Traffic Classification
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- LIVE DQSA -->
+    <!-- ================================================= -->
+
+    <h2>
+        <span class="live">🔴</span>
+        Live DQSA Network Monitor
+    </h2>
+
+    <div class="subtitle">
+        Real-time encrypted network traffic classification
+    </div>
+
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Device</th>
+                    <th>Local IP</th>
+                    <th>Remote IP</th>
+                    <th>Port</th>
+                    <th>Process</th>
+                    <th>Connection</th>
+                    <th>DQSA Category</th>
+                    <th>App Name</th>
+                    <th>Service</th>
+                    <th>VPN</th>
+                    <th>Confidence</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            {% if live_predictions %}
+
+                {% for item in live_predictions %}
+
+                <tr>
+
+                    <td>
+                        {{ item.device }}
+                    </td>
+
+                    <td>
+                        {{ item.local_ip }}
+                    </td>
+
+                    <td>
+                        {{ item.remote_ip }}
+                    </td>
+
+                    <td>
+                        {{ item.port }}
+                    </td>
+
+                    <td>
+                        {{ item.process }}
+                    </td>
+
+                    <td class="green">
+                        <span class="dot"></span>
+                        {{ item.status }}
+                    </td>
+
+                    <td>
+                        <span class="category">
+                            {{ item.category }}
+                        </span>
+                    </td>
+
+                    <td>
+                        <b>{{ item.app_name }}</b>
+                    </td>
+
+                    <td>
+                        {{ item.service }}
+                    </td>
+
+                    <td>
+                        <b>{{ item.vpn }}</b>
+                    </td>
+
+                    <td class="confidence">
+                        {{ item.confidence }}%
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <tr>
+
+                    <td colspan="11" class="empty">
+                        No sufficiently large live flows detected.
+                        Open Chrome or YouTube and browse for a few seconds.
+                    </td>
+
+                </tr>
+
+            {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- FRIEND DEVICES -->
+    <!-- ================================================= -->
+
+    <div class="device-section">
+
+        <h2>💻 Connected Friend Devices</h2>
+
+        {% if device_reports %}
+
+            {% for name, report in device_reports.items() %}
+
+            <div class="device-card">
+
+                <h3>
+                    💻 {{ name }}
+                </h3>
+
+                <p>
+                    <b>Local IP:</b>
+                    {{ report.local_ip }}
+                </p>
+
+                <p>
+                    <b>Last Report:</b>
+                    {{ report.timestamp }}
+                </p>
+
+                <p>
+                    <b>Connections:</b>
+                    {{ report.connections|length }}
+                </p>
+
+            </div>
+
+            {% endfor %}
+
+        {% else %}
+
+            <div class="empty">
+                No friend devices connected yet.
+            </div>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- ================================================= -->
+    <!-- INFORMATION -->
+    <!-- ================================================= -->
+
+    <div class="info">
+
+        <b>How DQSA works:</b>
+
+        The system captures network-flow characteristics such as
+        packet size, flow duration, byte rate and inter-arrival time.
+        DQSA processes these features and predicts the application
+        category, service type and VPN status without inspecting
+        encrypted payload content.
+
+        <br><br>
+
+        <b>Application Identification:</b>
+
+        The dashboard provides a human-readable demonstration label
+        based on the predicted traffic category. For example,
+        STREAMING is displayed as YouTube.
+
+        <br><br>
+
+        <b>Friend Devices:</b>
+
+        Authorized endpoint agents can report their own device
+        connection metadata to the dashboard.
+
+        <br><br>
+
+        <b>Privacy:</b>
+
+        The system does not inspect encrypted payload contents.
+
+    </div>
+
+
+    <p style="text-align:center; margin-top:30px; color:#777;">
+        Live monitoring refreshes every 10 seconds.
+    </p>
+
+</div>
+
+
+<script>
+
+    setTimeout(function() {
+        location.reload();
+    }, 10000);
+
+</script>
+
+</body>
+</html>
